@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# start_chroot_script
+# Setup for pib.rocks backend and frontend
+# Written by Michael Schaar
+# GPL V3
+########
+
+
+# Enable debug output and exit on any error
+set -x
+set -e
+
+# Source common functions and variables, and set up a cleanup trap
+source /common.sh
+install_cleanup_trap
+
+# Unpack filesystem components to their respective directories with appropriate ownership
+unpack /filesystem/home/pi /home/"${BASE_USER}" "${BASE_USER}"
+unpack /filesystem/home/root /root root
+unpack /filesystem/boot /boot
+
+# Update the package list
+apt-get update
+
+# Install required packages for the tx-pi
+check_install_pkgs ${TX_PI_PKGS}
+
+# Change to the base user's home directory
+cd /home/"${BASE_USER}"
+# Download the setup script for the tx-pi
+wget https://raw.githubusercontent.com/ftCommunity/tx-pi/refs/heads/develop/setup/tx-pi-setup.sh
+# Change ownership of the setup script to the base user
+chown "${BASE_USER}": tx-pi-setup.sh
+# Execute the setup script with debug output enabled, ignoring errors in QEMU changeroot
+bash -x tx-pi-setup.sh
+
+
+# Unpack the root filesystem at the end to ensure all modifications are applied
+unpack /filesystem/root /
+# Enable the doitpi_firstboot service to run at startup
+systemctl enable doitpi_firstboot.service

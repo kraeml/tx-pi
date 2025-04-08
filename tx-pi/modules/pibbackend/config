@@ -1,0 +1,7 @@
+TX_PI_VAR="This is a module variable"
+export BASE_ARCH="arm64"
+# Not working
+# BASE_USER="pib"
+
+TX_PI_PKGS="git curl vim screen ansible tree yamllint \
+                nmap net-tools build-essential cmake"
