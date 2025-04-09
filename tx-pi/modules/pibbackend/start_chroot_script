@@ -31,8 +31,12 @@ cd /home/"${BASE_USER}"
 wget https://raw.githubusercontent.com/ftCommunity/tx-pi/refs/heads/develop/setup/tx-pi-setup.sh
 # Change ownership of the setup script to the base user
 chown "${BASE_USER}": tx-pi-setup.sh
+# Deaktivate not running code in tx-pi-setup
+sed -i 's/nmcli radio wifi on//g' tx-pi-setup.sh
 # Execute the setup script with debug output enabled, ignoring errors in QEMU changeroot
 bash -x tx-pi-setup.sh
+
+rm tx-pi-setup.sh
 
 
 # Unpack the root filesystem at the end to ensure all modifications are applied
